@@ -217,7 +217,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Marriage Invitation</h1>
+      <h1>Harsora Parivar Marriage Invitation</h1>
       <input
         type="text"
         value={name}
