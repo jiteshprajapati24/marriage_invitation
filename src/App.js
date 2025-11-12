@@ -4,6 +4,7 @@ import { backgroundImage1 } from "./background1";
 import pdfMake from "pdfmake/build/pdfmake.min";
 import H1Invitation from "./pdf/H1.pdf";
 import H2Invitation from "./pdf/H2.pdf";
+import H2FamilyInvitation from "./pdf/H2_2.pdf";
 import H3Invitation from "./pdf/H3.pdf";
 import "./App.css";
 import { PDFDocument } from "pdf-lib";
@@ -11,6 +12,7 @@ import { PDFDocument } from "pdf-lib";
 function App() {
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false); // For loading spinner
+  const [invitationType, setInvitationType] = useState("couple");
 
   const renderTextToImage = (
     text,
@@ -123,7 +125,7 @@ function App() {
     },
   ];
 
-  const mergePDFs = async (generatedPDFBlob) => {
+  const mergePDFs = async (generatedPDFBlob, middlePdfUrl) => {
     try {
       const generatedPDFBytes = await generatedPDFBlob.arrayBuffer();
       const generatedPDF = await PDFDocument.load(generatedPDFBytes);
@@ -147,7 +149,7 @@ function App() {
 
       await appendPdfFromUrl(H1Invitation);
       await appendGeneratedPage(0);
-      await appendPdfFromUrl(H2Invitation);
+      await appendPdfFromUrl(middlePdfUrl);
       await appendGeneratedPage(1);
       await appendPdfFromUrl(H3Invitation);
 
@@ -180,6 +182,8 @@ function App() {
     setIsLoading(true); // Start loading spinner
 
     const formattedName = name.endsWith("") ? name : `${name},`;
+    const selectedMiddlePdf =
+      invitationType === "fullFamily" ? H2FamilyInvitation : H2Invitation;
 
     const nameLayers = NAME_PAGE_CONFIGS.map((pageConfig) => ({
       ...pageConfig,
@@ -206,7 +210,7 @@ function App() {
     // Generate the initial PDF and handle its Blob
     pdfMake.createPdf(docDefinition).getBlob(async (generatedPDFBlob) => {
       // Merge PDFs in specified order
-      await mergePDFs(generatedPDFBlob);
+      await mergePDFs(generatedPDFBlob, selectedMiddlePdf);
       setIsLoading(false); // Stop loading spinner
     });
   };
@@ -221,6 +225,16 @@ function App() {
         placeholder="Enter name"
         className="name-input"
       />
+      <br />
+      <br />
+      <select
+        value={invitationType}
+        onChange={(e) => setInvitationType(e.target.value)}
+        className="name-input"
+      >
+        <option value="couple">સજોડે</option>
+        <option value="fullFamily">સર્વો</option>
+      </select>
       <br />
       <br />
       <button onClick={generatePDF} className="generate-button">
