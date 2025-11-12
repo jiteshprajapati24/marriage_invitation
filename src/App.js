@@ -19,8 +19,8 @@ function App() {
     {
       canvasWidth = 300,
       canvasHeight = 50,
-      fontSize = 23,
-      minFontSize = 14,
+      fontSize = 15,
+      minFontSize = 15,
       fontWeight = "700",
       color = "#b40000",
       fontFamily = "'S0709892'",
@@ -64,7 +64,7 @@ function App() {
     const words = text.split(" ");
     words.forEach((word) => {
       const testLine = currentLine + word + " ";
-      if (ctx.measureText(testLine).width > canvasWidth - 20) {
+      if (ctx.measureText(testLine).width > canvasWidth - paddingX * 2) {
         lines.push(currentLine.trim());
         currentLine = word + " ";
       } else {
@@ -93,28 +93,30 @@ function App() {
   const NAME_PAGE_CONFIGS = [
     {
       background: backgroundImage,
-      position: { x: 225, y: 603 },
+      position: { x: 180, y: 440 },
       textOptions: {
         canvasWidth: 310,
-        canvasHeight: 410,
-        fontSize: 20,
-        minFontSize: 20,
-        fontWeight: "700",
+        canvasHeight: 240,
+        fontSize: 15,
+        minFontSize: 15,
+        fontWeight: "600",
         color: "#e50780",
         textAlign: "left",
         paddingX: 0,
-        paddingY: 0,
+        paddingY: 20,
+        lineHeight: 24,
+
         allowResize: false,
       },
     },
     {
       background: backgroundImage1,
-      position: { x: 230, y: 210 },
+      position: { x: 175, y: 142 },
       textOptions: {
         canvasWidth: 310,
         canvasHeight: 410,
-        fontSize: 20,
-        minFontSize: 17,
+        fontSize: 13,
+        minFontSize: 13,
         fontWeight: "600",
         color: "#860b0c",
         textAlign: "left",
@@ -181,7 +183,7 @@ function App() {
 
     setIsLoading(true); // Start loading spinner
 
-    const formattedName = name.endsWith("") ? name : `${name},`;
+    const formattedName = name.trim();
     const selectedMiddlePdf =
       invitationType === "fullFamily" ? H2FamilyInvitation : H2Invitation;
 
@@ -190,7 +192,11 @@ function App() {
       image: renderTextToImage(formattedName, pageConfig.textOptions),
     }));
 
+    const pageSize = { width: 461, height: 670 }; // A4 size in points
+
     const docDefinition = {
+      pageSize,
+      pageMargins: [0, 0, 0, 0],
       content: nameLayers.map((layer, index) => ({
         image: layer.image,
         absolutePosition: layer.position,
@@ -202,7 +208,9 @@ function App() {
 
         return {
           image: pageConfig.background, // Background image
-          width: 595, // A4 size width
+          width: pageSize.width,
+          height: pageSize.height,
+          absolutePosition: { x: 0, y: 0 },
         };
       },
     };
